@@ -16,10 +16,19 @@ from .db import get_engine
 
 
 FEATURE_COLS: List[str] = [
-    "sepal_length",
-    "sepal_width",
-    "petal_length",
-    "petal_width",
+    "alcohol",
+    "malic_acid",
+    "ash",
+    "alcalinity_of_ash",
+    "magnesium",
+    "total_phenols",
+    "flavanoids",
+    "nonflavanoid_phenols",
+    "proanthocyanins",
+    "color_intensity",
+    "hue",
+    "od280_od315_of_diluted_wines",
+    "proline",
 ]
 
 
@@ -47,7 +56,7 @@ def fit_model(settings: Settings, X: np.ndarray, y: np.ndarray):
     y_pred = model.predict(X_test)
 
     # Persist model to a temp path to avoid XCom heavy objects
-    tmp_dir = tempfile.mkdtemp(prefix="iris_model_")
+    tmp_dir = tempfile.mkdtemp(prefix="wine_model_")
     model_path = os.path.join(tmp_dir, "model.joblib")
     joblib.dump(model, model_path)
 
