@@ -1,11 +1,11 @@
 services:
-  postgres:
+  postgres_wine:
     image: postgres:15
-    container_name: fp_postgres
+    container_name: wine_postgres
     environment:
-      POSTGRES_USER: mlflow
-      POSTGRES_PASSWORD: mlflow
-      POSTGRES_DB: mlflow
+      POSTGRES_USER: mlflow_wine
+      POSTGRES_PASSWORD: mlflow_wine
+      POSTGRES_DB: mlflow_wine
     ports:
       - "5432:5432"
     volumes:
@@ -20,16 +20,18 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.mlflow
-    container_name: fp_mlflow
+    container_name: wine_mlflow
     depends_on:
-      postgres:
+      postgres_wine:
         condition: service_healthy
-    command: >-
+    command: >
       mlflow server
-      --backend-store-uri postgresql://mlflow:mlflow@postgres:5432/mlflow
+      --backend-store-uri postgresql://mlflow_wine:mlflow_wine@postgres_wine:5432/mlflow_wine
       --artifacts-destination /mlflow/artifacts
       --host 0.0.0.0
       --port 5000
+      --serve-artifacts
+      --allowed-hosts mlflow,mlflow:5000,localhost,localhost:5000,127.0.0.1,127.0.0.1:5000
     ports:
       - "5000:5000"
     volumes:
@@ -48,9 +50,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: fp_airflow
+    container_name: wine_airflow
     depends_on:
-      postgres:
+      postgres_wine:
         condition: service_healthy
       mlflow:
         condition: service_started
@@ -66,11 +68,11 @@ services:
       # Airflow connection to Postgres used by the pipeline (conn id: postgres_default)
       # Note: Airflow expects the environment variable name WITHOUT section separators for connections.
       # Use AIRFLOW_CONN_<CONN_ID_UPPERCASE> to define a connection URI.
-      AIRFLOW_CONN_POSTGRES_DEFAULT: postgresql://mlflow:mlflow@postgres:5432/mlflow
+      AIRFLOW_CONN_POSTGRES_DEFAULT: postgresql://mlflow_wine:mlflow_wine@postgres_wine:5432/mlflow_wine
       # Point MLflow client in the DAGs to the MLflow tracking server service
       MLFLOW_TRACKING_URI: http://mlflow:5000
       # Explicit experiment name to appear in MLflow UI (created if not exists)
-      EXPERIMENT_NAME: IrisClassifier
+      EXPERIMENT_NAME: WineClassifier
       # Ensure examples are not loaded (redundant with Dockerfile but explicit here)
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       # Set a Fernet key to enable encryption of Airflow connections/variables (dev default; override in prod)

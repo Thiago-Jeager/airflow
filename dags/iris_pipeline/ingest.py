@@ -11,19 +11,28 @@ from .schemas import create_iris_table_sql
 
 
 RENAME_MAP = {
-    "sepal length (cm)": "sepal_length",
-    "sepal width (cm)": "sepal_width",
-    "petal length (cm)": "petal_length",
-    "petal width (cm)": "petal_width",
+    # map the odd feature name containing a slash to a safe column name
+    "od280/od315_of_diluted_wines": "od280_od315_of_diluted_wines",
 }
 
 
 def load_iris_df(ds: str | None = None) -> pd.DataFrame:
-    iris = datasets.load_iris()
-    df = pd.DataFrame(iris.data, columns=iris.feature_names)
+    """Load the wine dataset (keeps function name for compatibility).
+
+    Returns a dataframe with feature columns, `target`, `target_name`, and optionally
+    `ingestion_date` when `ds` is provided.
+    """
+    wine = datasets.load_wine()
+    df = pd.DataFrame(wine.data, columns=wine.feature_names)
+    # normalize any uncommon column names
     df = df.rename(columns=RENAME_MAP)
-    df["target"] = iris.target
-    df["target_name"] = df["target"].apply(lambda i: iris.target_names[i])
+    df["target"] = wine.target
+    # sklearn wine dataset does not provide readable target names by default; create them
+    try:
+        target_names = wine.target_names
+    except Exception:
+        target_names = [str(x) for x in sorted(set(wine.target))]
+    df["target_name"] = df["target"].apply(lambda i: target_names[i])
     if ds:
         df["ingestion_date"] = pd.to_datetime(ds).normalize()
     return df

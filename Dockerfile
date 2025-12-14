@@ -31,9 +31,9 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES=False \
 # Pipeline runtime settings (override at `docker run -e ...`)
 # These are read by our SOLID-configured modules via environment variables.
 ENV POSTGRES_CONN_ID=postgres_default \
-    IRIS_TABLE=iris_data \
-    EVAL_TABLE=iris_evaluation \
-    EXPERIMENT_NAME=IrisClassifier \
+    IRIS_TABLE=wine_data \
+    EVAL_TABLE=wine_evaluation \
+    EXPERIMENT_NAME=WineClassifier \
     MODEL_TYPE=logreg \
     TEST_SIZE=0.2 \
     RANDOM_STATE=42

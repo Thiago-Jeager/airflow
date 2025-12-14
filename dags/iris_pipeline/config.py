@@ -10,11 +10,11 @@ class Settings:
     postgres_conn_id: str = "postgres_default"
 
     # Tables
-    iris_table: str = "iris_data"
-    eval_table: str = "iris_evaluation"
+    iris_table: str = "wine_data"
+    eval_table: str = "wine_evaluation"
 
     # ML/experiment
-    experiment_name: str = "IrisClassifier"
+    experiment_name: str = "WineClassifier"
     model_type: str = "logreg"  # or "rf"
     test_size: float = 0.2
     random_state: int = 42
